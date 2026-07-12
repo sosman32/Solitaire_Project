@@ -154,10 +154,11 @@
      display: block;
      position: relative;
      float: left;
-     width: 13%;
+     width: 12.5%;
      margin-right: 1.5%;
      margin-bottom: 10px;
      padding: 5px;
+     box-sizing: border-box;
   }
   .pile:last-child {
      margin-right: 0;
