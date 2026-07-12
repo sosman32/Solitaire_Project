@@ -559,8 +559,12 @@
      }
   
   /* foundation */
+
+     #fnd {
+      transform: translateY(-20px);
+     }
      .fnd .pile {
-        left: 43.5%;
+        left: 42%;
      }
      .fnd .pile::before {
         content '';
@@ -574,7 +578,7 @@
         margin-top: -0.6em;
         line-height: 1;
         text-align: center;
-        opacity: 0.25;
+        opacity: .25;
      }
      @media screen and (min-width: 768px) {
         .fnd .pile::before {
