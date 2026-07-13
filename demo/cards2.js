@@ -134,6 +134,7 @@ Optional Features:
    var $fnd = d.querySelector('#fnd');
    var $tab = d.querySelector('#tab');
    var $autoWin = d.querySelector('#auto-win');
+   var $themeToggle = d.querySelector('#theme-toggle');
 
    // other global vars
    var clock = 0;
@@ -158,6 +159,8 @@ Optional Features:
 
 // 5. START GAMEPLAY
    play(table);
+   
+   $themeToggle.addEventListener('click', toggleTheme);
 
 // ### EVENT HANDLERS ###
    window.onresize = function(event) {
@@ -515,6 +518,12 @@ Optional Features:
             e = els[e];
             if (e.nodeType) e.style.height = h + 'px'; // set height in css
          }
+      }
+      
+   //dark theme toggle
+      function toggleTheme() {
+         console.log('Theme button clicked');
+         d.body.classList.toggle('dark-mode');
       }
 
    // gameplay
@@ -1372,5 +1381,13 @@ Optional Features:
             }
          };
          tick();
+
+         function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+         }
+         function toggleTheme() {
+   console.log("Theme button clicked");
+   d.body.classList.toggle('dark-mode');
+}
 
       }
