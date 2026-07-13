@@ -1000,7 +1000,6 @@ Optional Features:
                   // output to display
                   $timerSpan.textContent = minutes + ':' + seconds;
                   // if 10 seconds has passed decrement score by 2 pts
-                  if ( time % 10 === 0 ) updateScore(-2);
                }, 1000);
                // add dataset to body
                d.body.dataset.gameplay = 'active';
