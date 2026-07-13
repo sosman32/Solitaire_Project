@@ -77,25 +77,39 @@
      height: 100%;
      font-size: 0;
   }
+
   #score .timer button i::before {
      position: absolute;
      top: 50%;
      left: 50%;
-     width: 0.75em;
-     height: 1em;
-     margin-left: -0.375em;
-     margin-top: -0.5em;
-     font-size: 1.5rem;
      content: none;
+     transform: translate(-50%, -50%);
   }
+
+  /* Play triangle */
   #score .timer button i#play::before {
+     width: 0;
+     height: 0;
      border-top: 8px solid transparent;
-     border-left: 12px solid #fff;
      border-bottom: 8px solid transparent;
+     border-left: 13px solid #fff;
+
+     /* Slight adjustment because a triangle's visual centre differs */
+     transform: translate(-42%, -50%);
   }
+
+  /* Pause bars */
   #score .timer button i#pause::before {
-     border-right: 4px solid #fff;
-     border-left: 4px solid #fff;
+     width: 14px;
+     height: 16px;
+     background:
+        linear-gradient(to right,
+           #fff 0,
+           #fff 4px,
+           transparent 4px,
+           transparent 10px,
+           #fff 10px,
+           #fff 14px);
   }
   [data-gameplay="active"] #score .timer button,
   [data-gameplay="paused"] #score .timer button {
