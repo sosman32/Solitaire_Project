@@ -149,7 +149,7 @@ Optional Features:
    deck = create(deck, suits);
 
 // 2. SHUFFLE DECK
-   deck = shuffle(deck);
+   deck = createPlayableShuffle(deck);
 
 // 3. DEAL DECK
    table = deal(deck, table);
@@ -200,6 +200,133 @@ Optional Features:
             deck[rand] = temp;
          }
          return deck;
+      }
+      
+   // create a shuffle with a more playable opening layout
+      function createPlayableShuffle(deck) {
+         console.log('Creating Playable Shuffle...');
+
+         var bestDeck = [];
+         var bestScore = -1;
+         var attempts = 500;
+
+         for (var attempt = 0; attempt < attempts; attempt++) {
+            var shuffledDeck = shuffle(deck.slice());
+            var openingScore = scoreOpeningLayout(shuffledDeck);
+
+            if (openingScore > bestScore) {
+               bestScore = openingScore;
+               bestDeck = shuffledDeck.slice();
+            }
+
+            if (openingScore >= 8) {
+               console.log(
+                  'Playable shuffle found after ' +
+                  (attempt + 1) +
+                  ' attempts.'
+               );
+
+               return shuffledDeck;
+            }
+         }
+
+         console.log(
+            'Using best shuffle found. Opening score: ' +
+            bestScore
+         );
+
+         return bestDeck;
+      }
+
+   // measure how useful the seven opening face-up cards are
+      function scoreOpeningLayout(deck) {
+         var faceUpIndexes = [0, 7, 13, 18, 22, 25, 27];
+         var faceUpCards = [];
+         var openingScore = 0;
+
+         for (var i = 0; i < faceUpIndexes.length; i++) {
+            faceUpCards.push(deck[faceUpIndexes[i]]);
+         }
+
+         for (var cardIndex = 0; cardIndex < faceUpCards.length; cardIndex++) {
+            var card = faceUpCards[cardIndex];
+            var value = getCardValue(card);
+
+            if (value === 1) {
+               openingScore += 4;
+            } else if (value === 2) {
+               openingScore += 3;
+            } else if (value === 3) {
+               openingScore += 2;
+            } else if (value === 13) {
+               openingScore += 1;
+            }
+         }
+
+         for (var sourceIndex = 0; sourceIndex < faceUpCards.length; sourceIndex++) {
+            for (var destinationIndex = 0;
+               destinationIndex < faceUpCards.length;
+               destinationIndex++) {
+
+               if (sourceIndex === destinationIndex) {
+                  continue;
+               }
+
+               if (canMakeOpeningMove(
+                  faceUpCards[sourceIndex],
+                  faceUpCards[destinationIndex]
+               )) {
+                  openingScore += 2;
+               }
+            }
+         }
+
+         return openingScore;
+      }
+
+   // check whether one opening card can be placed on another
+      function canMakeOpeningMove(sourceCard, destinationCard) {
+         var sourceValue = getCardValue(sourceCard);
+         var destinationValue = getCardValue(destinationCard);
+
+         return (
+            sourceValue + 1 === destinationValue &&
+            getCardColor(sourceCard) !== getCardColor(destinationCard)
+         );
+      }
+
+   // convert card names into numerical values
+      function getCardValue(card) {
+         var cardValue = card[0];
+
+         if (cardValue === 'A') {
+            return 1;
+         }
+
+         if (cardValue === 'J') {
+            return 11;
+         }
+
+         if (cardValue === 'Q') {
+            return 12;
+         }
+
+         if (cardValue === 'K') {
+            return 13;
+         }
+
+         return parseInt(cardValue);
+      }
+
+   // return the card's Solitaire color
+      function getCardColor(card) {
+         var suit = card[1];
+
+         if (suit === 'heart' || suit === 'diamond') {
+            return 'red';
+         }
+
+         return 'black';
       }
 
    // deal deck
