@@ -834,14 +834,14 @@ Optional Features:
                   $table.dataset.move = 'true';
                   $table.dataset.selected = card;
                   $table.dataset.source = e.closest('.pile').dataset.pile;
+
+                  // allow any selected card to move into an empty tableau pile
+                  bindClick('#tab .pile[data-empty="true"]');
+
                   // if ace is selected
                   if (rank === 'A') {
                      console.log('Ace Is Selected');
-                     bindClick('#fnd #'+suit+'s.pile[data-empty="true"]');
-                  }
-                  if (rank === 'K') {
-                     console.log('King Is Selected');
-                     bindClick('#tab .pile[data-empty="true"]');
+                     bindClick('#fnd #' + suit + 's.pile[data-empty="true"]');
                   }
                }
 
