@@ -897,6 +897,23 @@ Optional Features:
             var dRank = parseRankAsInt(dest[0]);
             var dSuit = dest[1];
             var dPile = $table.dataset.dest;
+
+            // if destination is a tableau pile, only allow the move
+            // when the clicked card is the last card in that pile
+            if (!isNaN(dPile)) {
+               var destinationPile = table['tab'][dPile];
+               var lastCard = destinationPile[destinationPile.length - 1];
+
+               if (
+                  !lastCard ||
+                  lastCard[0] !== dest[0] ||
+                  lastCard[1] !== dest[1]
+               ) {
+                  console.log('Destination card is not the last card in the tableau pile');
+                  return false;
+               }
+            }
+
             // if destination pile is foundation
             if (['spades','hearts','diamonds','clubs'].indexOf(dPile) >= 0) {
                // if rank isn't in sequence then return false
