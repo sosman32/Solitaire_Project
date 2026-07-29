@@ -202,36 +202,37 @@ Optional Features:
          return deck;
       }
       
-   // create a shuffle with a more playable opening layout
+   // create a random shuffle with a playable and varied opening layout
       function createPlayableShuffle(deck) {
-         console.log('Creating Playable Shuffle...');
+         console.log('Creating Balanced Playable Shuffle...');
 
          var bestDeck = [];
-         var bestScore = -1;
-         var attempts = 500;
+         var bestScore = -Infinity;
+         var bestOpeningScore = 0;
+         var bestVarietyScore = 0;
+         var attempts = 1000;
 
          for (var attempt = 0; attempt < attempts; attempt++) {
             var shuffledDeck = shuffle(deck.slice());
+
             var openingScore = scoreOpeningLayout(shuffledDeck);
+            var varietyScore = scoreDealVariety(shuffledDeck);
+            var totalScore = openingScore + varietyScore;
 
-            if (openingScore > bestScore) {
-               bestScore = openingScore;
+            if (totalScore > bestScore) {
+               bestScore = totalScore;
+               bestOpeningScore = openingScore;
+               bestVarietyScore = varietyScore;
                bestDeck = shuffledDeck.slice();
-            }
-
-            if (openingScore >= 8) {
-               console.log(
-                  'Playable shuffle found after ' +
-                  (attempt + 1) +
-                  ' attempts.'
-               );
-
-               return shuffledDeck;
             }
          }
 
          console.log(
-            'Using best shuffle found. Opening score: ' +
+            'Balanced shuffle selected. Opening score: ' +
+            bestOpeningScore +
+            ', variety score: ' +
+            bestVarietyScore +
+            ', total score: ' +
             bestScore
          );
 
@@ -282,6 +283,91 @@ Optional Features:
          }
 
          return openingScore;
+      }
+      
+   // score the deal based on rank variety and card distribution
+      function scoreDealVariety(deck) {
+         var faceUpIndexes = [0, 7, 13, 18, 22, 25, 27];
+         var faceUpCards = [];
+         var tableauCards = deck.slice(0, 28);
+         var earlyStockCards = deck.slice(28, 40);
+         var openingCards = deck.slice(0, 40);
+         var varietyScore = 0;
+
+         for (var i = 0; i < faceUpIndexes.length; i++) {
+            faceUpCards.push(deck[faceUpIndexes[i]]);
+         }
+
+         // Strongly reward seven different opening ranks.
+         varietyScore += countUniqueRanks(faceUpCards) * 4;
+
+         // Reward variety among the first stock cards that will be drawn.
+         varietyScore += countUniqueRanks(earlyStockCards);
+
+         // Strongly discourage duplicate ranks among visible tableau cards.
+         varietyScore -= countExtraRankCopies(faceUpCards, 1) * 8;
+
+         // Avoid placing three or four copies of a rank in the tableau.
+         varietyScore -= countExtraRankCopies(tableauCards, 2) * 3;
+
+         // Avoid repeated ranks in the first twelve stock cards.
+         varietyScore -= countExtraRankCopies(earlyStockCards, 1) * 3;
+
+         // Avoid identical ranks appearing next to each other in the stock.
+         varietyScore -= countAdjacentRankRepeats(earlyStockCards) * 5;
+
+         // Avoid placing all four copies of a rank in the first forty cards.
+         varietyScore -= countExtraRankCopies(openingCards, 3) * 2;
+
+         return varietyScore;
+      }
+
+   // count how many different ranks appear in a group of cards
+      function countUniqueRanks(cards) {
+         var ranks = {};
+
+         for (var i = 0; i < cards.length; i++) {
+            ranks[cards[i][0]] = true;
+         }
+
+         return Object.keys(ranks).length;
+      }
+
+   // count rank copies above the allowed amount
+      function countExtraRankCopies(cards, allowedCopies) {
+         var rankCounts = {};
+         var extraCopies = 0;
+
+         for (var i = 0; i < cards.length; i++) {
+            var rank = cards[i][0];
+
+            if (!rankCounts[rank]) {
+               rankCounts[rank] = 0;
+            }
+
+            rankCounts[rank]++;
+         }
+
+         for (var rank in rankCounts) {
+            if (rankCounts[rank] > allowedCopies) {
+               extraCopies += rankCounts[rank] - allowedCopies;
+            }
+         }
+
+         return extraCopies;
+      }
+
+   // count matching ranks beside each other in the stock
+      function countAdjacentRankRepeats(cards) {
+         var repeatedRanks = 0;
+
+         for (var i = 1; i < cards.length; i++) {
+            if (cards[i][0] === cards[i - 1][0]) {
+               repeatedRanks++;
+            }
+         }
+
+         return repeatedRanks;
       }
 
    // check whether one opening card can be placed on another
@@ -897,23 +983,6 @@ Optional Features:
             var dRank = parseRankAsInt(dest[0]);
             var dSuit = dest[1];
             var dPile = $table.dataset.dest;
-
-            // if destination is a tableau pile, only allow the move
-            // when the clicked card is the last card in that pile
-            if (!isNaN(dPile)) {
-               var destinationPile = table['tab'][dPile];
-               var lastCard = destinationPile[destinationPile.length - 1];
-
-               if (
-                  !lastCard ||
-                  lastCard[0] !== dest[0] ||
-                  lastCard[1] !== dest[1]
-               ) {
-                  console.log('Destination card is not the last card in the tableau pile');
-                  return false;
-               }
-            }
-
             // if destination pile is foundation
             if (['spades','hearts','diamonds','clubs'].indexOf(dPile) >= 0) {
                // if rank isn't in sequence then return false
