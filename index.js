@@ -11,7 +11,8 @@ const flash = require('connect-flash');
 var jsonParser = bodyParser.json();
 
 //Databse connection
-mongoose.connect("mongodb://localhost:27017/auth_demo_app", { useNewUrlParser: true, useUnifiedTopology: true });
+// commented this out because it was causing an error when trying to deploy to render. Currently did not enable accounts and login credentials and can revisit this later if needed. 
+// mongoose.connect("mongodb://localhost:27017/auth_demo_app", { useNewUrlParser: true, useUnifiedTopology: true });
 
 //The ejs routes
 //var secure = require('express-force-https');
