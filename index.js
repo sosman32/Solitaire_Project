@@ -16,7 +16,7 @@ mongoose.connect("mongodb://localhost:27017/auth_demo_app", { useNewUrlParser: t
 //The ejs routes
 //var secure = require('express-force-https');
 var app = express();
-require('./routes/local-authentication');
+require('./routes/Local-authentication');
 //app.use(secure);
 app.set('port', process.env.PORT || 3000);
 app.use(bodyParser.urlencoded({ extended: true }));
